@@ -276,7 +276,7 @@ Re-run **everything**, including data loading and feature engineering that haven
 stages:
   prepare:   {deps: [src/prepare.py, data/adult.csv]}
   featurize: {deps: [src/featurize.py, data/processed.csv]}
-  train:     {deps: [src/train.py, data/features.npz], params: [model.*]}
+  train:     {deps: [src/train.py, data/features.npz], params: [train.*]}
   evaluate:  {deps: [src/evaluate.py, models/model.joblib]}
 ```
 
@@ -438,15 +438,15 @@ DVC's built-in experiment tracking requires no additional infrastructure — it'
 dvc exp run --name "exp-200-trees"
 
 # Parameter sweep
-dvc exp run --set-param model.n_estimators=200 --name "n200"
-dvc exp run --set-param model.max_depth=15 --name "depth15"
-dvc exp run --set-param model.n_estimators=200 \
-             --set-param model.max_depth=15 --name "n200-d15"
+dvc exp run --set-param train.n_estimators=200 --name "n200"
+dvc exp run --set-param train.max_depth=15 --name "depth15"
+dvc exp run --set-param train.n_estimators=200 \
+             --set-param train.max_depth=15 --name "n200-d15"
 
 # Queue multiple experiments
-dvc exp run --queue --set-param model.n_estimators=50
-dvc exp run --queue --set-param model.n_estimators=100
-dvc exp run --queue --set-param model.n_estimators=200
+dvc exp run --queue --set-param train.n_estimators=50
+dvc exp run --queue --set-param train.n_estimators=100
+dvc exp run --queue --set-param train.n_estimators=200
 dvc queue start --jobs 3  # Run 3 experiments in parallel
 ```
 

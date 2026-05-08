@@ -102,7 +102,7 @@ If **none of the above** changed, DVC skips the stage entirely and restores outp
 dvc repro --force          → All 4 stages executed (45.8s)
 dvc repro                  → All 4 stages skipped  (0.8s)  ← 57× speedup
 
-# After changing model.n_estimators: 100 → 150:
+# After changing train.n_estimators: 100 → 150:
 dvc repro                  → prepare   SKIPPED  ✓
                              featurize SKIPPED  ✓
                              train     RUNNING  (param hash changed)
@@ -217,12 +217,12 @@ When a team of 5 ML engineers works on the same model:
 
 ```bash
 # Engineer A explores new hyperparameters
-dvc exp run --set-param model.n_estimators=200 --name "feat/more-trees"
+dvc exp run --set-param train.n_estimators=200 --name "feat/more-trees"
 dvc exp push origin feat/more-trees
 
 # Engineer B reviews and compares
 dvc exp pull origin feat/more-trees
-dvc exp show --include-params model.n_estimators --md
+dvc exp show --include-params train.n_estimators --md
 ```
 
 ---
