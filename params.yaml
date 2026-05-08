@@ -1,0 +1,33 @@
+
+# ============================================================
+# Enterprise MLOps Pipeline — Parameters Configuration
+# ============================================================
+# All pipeline stages consume this file via DVC.
+# Modify params here to trigger intelligent partial re-runs.
+# ============================================================
+
+base:
+  random_state: 42
+  log_level: INFO
+  project_name: enterprise-mlops-pipeline
+
+data:
+  raw_data_path: data/adult.csv
+  processed_data_path: data/processed.csv
+  features_path: data/features.npz
+  target_column: income
+  test_size: 0.2
+
+train:
+  model_type: random_forest
+  n_estimators: 100
+  max_depth: 10
+  min_samples_split: 5
+  min_samples_leaf: 2
+  max_features: sqrt
+  n_jobs: -1
+
+evaluate:
+  metrics_path: metrics/scores.json
+  model_path: models/model.joblib
+  threshold: 0.5

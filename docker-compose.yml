@@ -1,0 +1,81 @@
+# ============================================================
+# Enterprise MLOps Pipeline — Docker Compose
+# ============================================================
+# Defines the containerized MLOps environment.
+#
+# Usage:
+#   docker-compose up --build         # Full pipeline run
+#   docker-compose up --build -d      # Detached mode
+#   docker-compose run app bash       # Interactive shell
+# ============================================================
+
+version: "3.9"
+
+services:
+
+  # ── Main MLOps Pipeline Service ──────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: app
+    image: enterprise-mlops-pipeline:latest
+    container_name: mlops-pipeline-runner
+
+    # Mount the project directory so outputs are persisted on host
+    volumes:
+      - .:/app
+      - /app/__pycache__  # Exclude cache from mount
+
+    # Environment variables (override with .env file)
+    env_file:
+      - .env.example
+
+    environment:
+      - PYTHONPATH=/app
+      - DVC_NO_ANALYTICS=true
+
+    # Health check: verify Python interpreter is available
+    healthcheck:
+      test: ["CMD", "python", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # Run the full DVC pipeline by default
+    command: ["dvc", "repro"]
+
+    # Keep container running for interactive use
+    # Override with: docker-compose run app bash
+    stdin_open: true
+    tty: true
+
+    # Resource limits (adjust for your environment)
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 512M
+
+  # ── Test Runner Service ───────────────────────────────────
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps
+    image: enterprise-mlops-pipeline:test
+    container_name: mlops-test-runner
+
+    volumes:
+      - .:/app
+
+    environment:
+      - PYTHONPATH=/app
+
+    working_dir: /app
+    command: ["pytest", "tests/", "-v", "--tb=short"]
+
+    profiles:
+      - test  # Only started when: docker-compose --profile test up

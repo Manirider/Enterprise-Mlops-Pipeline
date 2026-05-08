@@ -1,0 +1,156 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/adult.csv
+      hash: md5
+      md5: 5d7c39d7b8804f071cdd1f2a7c460872
+      size: 3974305
+    - path: src/prepare.py
+      hash: md5
+      md5: 85122d4d8e3f584c3931c6fff547be8f
+      size: 7433
+    - path: src/utils/config.py
+      hash: md5
+      md5: 6fe7ee1fcceace6649c6537223458774
+      size: 2653
+    - path: src/utils/logger.py
+      hash: md5
+      md5: b67689dd11db4c0d6d8690d3d488ad83
+      size: 2802
+    - path: src/utils/paths.py
+      hash: md5
+      md5: 84bff3047ffe4b9ad8083835d12eca13
+      size: 2065
+    params:
+      params.yaml:
+        base.log_level: INFO
+        base.random_state: 42
+        data.processed_data_path: data/processed.csv
+        data.raw_data_path: data/adult.csv
+        data.target_column: income
+    outs:
+    - path: data/processed.csv
+      hash: md5
+      md5: 3ae96eb049bde2bd104b40bb086ba6ad
+      size: 3325654
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+    - path: data/processed.csv
+      hash: md5
+      md5: 3ae96eb049bde2bd104b40bb086ba6ad
+      size: 3325654
+    - path: src/featurize.py
+      hash: md5
+      md5: f56bcb3cb3603f72fcd64f49120330ba
+      size: 7520
+    - path: src/utils/config.py
+      hash: md5
+      md5: 6fe7ee1fcceace6649c6537223458774
+      size: 2653
+    - path: src/utils/logger.py
+      hash: md5
+      md5: b67689dd11db4c0d6d8690d3d488ad83
+      size: 2802
+    - path: src/utils/paths.py
+      hash: md5
+      md5: 84bff3047ffe4b9ad8083835d12eca13
+      size: 2065
+    params:
+      params.yaml:
+        base.random_state: 42
+        data.features_path: data/features.npz
+        data.processed_data_path: data/processed.csv
+        data.target_column: income
+        data.test_size: 0.2
+    outs:
+    - path: data/features.npz
+      hash: md5
+      md5: 788cc575d64213ea9c18739003bafebf
+      size: 394657
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/features.npz
+      hash: md5
+      md5: 788cc575d64213ea9c18739003bafebf
+      size: 394657
+    - path: src/train.py
+      hash: md5
+      md5: cce94a7236eefa57b8eea47b4a77c4cd
+      size: 5804
+    - path: src/utils/config.py
+      hash: md5
+      md5: 6fe7ee1fcceace6649c6537223458774
+      size: 2653
+    - path: src/utils/helpers.py
+      hash: md5
+      md5: 6cba9ea3e800c908a94c752740c689e9
+      size: 3659
+    - path: src/utils/logger.py
+      hash: md5
+      md5: b67689dd11db4c0d6d8690d3d488ad83
+      size: 2802
+    - path: src/utils/paths.py
+      hash: md5
+      md5: 84bff3047ffe4b9ad8083835d12eca13
+      size: 2065
+    params:
+      params.yaml:
+        base.random_state: 42
+        evaluate.model_path: models/model.joblib
+        train.max_depth: 10
+        train.max_features: sqrt
+        train.min_samples_leaf: 2
+        train.min_samples_split: 5
+        train.model_type: random_forest
+        train.n_estimators: 100
+        train.n_jobs: -1
+    outs:
+    - path: models/model.joblib
+      hash: md5
+      md5: 3b4643892d903f2d2b2fdfab6d97967a
+      size: 4850745
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/features.npz
+      hash: md5
+      md5: 788cc575d64213ea9c18739003bafebf
+      size: 394657
+    - path: models/model.joblib
+      hash: md5
+      md5: 3b4643892d903f2d2b2fdfab6d97967a
+      size: 4850745
+    - path: src/evaluate.py
+      hash: md5
+      md5: 6bcde553a655383b63449b862688a234
+      size: 4427
+    - path: src/utils/config.py
+      hash: md5
+      md5: 6fe7ee1fcceace6649c6537223458774
+      size: 2653
+    - path: src/utils/logger.py
+      hash: md5
+      md5: b67689dd11db4c0d6d8690d3d488ad83
+      size: 2802
+    - path: src/utils/metrics.py
+      hash: md5
+      md5: b57b729d544e714e337313793af25902
+      size: 3502
+    - path: src/utils/paths.py
+      hash: md5
+      md5: 84bff3047ffe4b9ad8083835d12eca13
+      size: 2065
+    params:
+      params.yaml:
+        evaluate.metrics_path: metrics/scores.json
+        evaluate.model_path: models/model.joblib
+        evaluate.threshold: 0.5
+    outs:
+    - path: metrics/scores.json
+      hash: md5
+      md5: 3b0437eb864d2c6a39497d2bc95f26d3
+      size: 1079

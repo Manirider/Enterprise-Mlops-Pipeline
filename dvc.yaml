@@ -1,0 +1,113 @@
+
+# ============================================================
+# Enterprise MLOps Pipeline — DVC DAG Definition
+# ============================================================
+# Defines the 4-stage modular pipeline:
+#   prepare → featurize → train → evaluate
+#
+# Key DVC features leveraged:
+#   - Intelligent caching per stage
+#   - Parameter-driven partial re-runs
+#   - Artifact tracking and versioning
+#   - Experiment reproducibility (dvc repro / dvc exp run)
+# ============================================================
+
+stages:
+
+  # ─────────────────────────────────────────────────────────
+  # STAGE 1: Data Preparation
+  # Loads raw UCI Adult dataset, cleans missing values,
+  # standardizes column names, and persists processed CSV.
+  # ─────────────────────────────────────────────────────────
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - src/utils/logger.py
+      - src/utils/config.py
+      - src/utils/paths.py
+      - data/adult.csv
+    params:
+      - params.yaml:
+          - base.random_state
+          - base.log_level
+          - data.raw_data_path
+          - data.processed_data_path
+          - data.target_column
+    outs:
+      - data/processed.csv
+
+  # ─────────────────────────────────────────────────────────
+  # STAGE 2: Feature Engineering
+  # Encodes categorical variables, performs train/test split,
+  # and serializes feature matrices to NPZ format.
+  # ─────────────────────────────────────────────────────────
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+      - src/featurize.py
+      - src/utils/logger.py
+      - src/utils/config.py
+      - src/utils/paths.py
+      - data/processed.csv
+    params:
+      - params.yaml:
+          - base.random_state
+          - data.processed_data_path
+          - data.features_path
+          - data.target_column
+          - data.test_size
+    outs:
+      - data/features.npz
+
+  # ─────────────────────────────────────────────────────────
+  # STAGE 3: Model Training
+  # Loads feature matrices, trains a RandomForestClassifier
+  # with params.yaml hyperparameters, serializes to joblib.
+  # ─────────────────────────────────────────────────────────
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/train.py
+      - src/utils/logger.py
+      - src/utils/config.py
+      - src/utils/paths.py
+      - src/utils/helpers.py
+      - data/features.npz
+    params:
+      - params.yaml:
+          - base.random_state
+          - train.model_type
+          - train.n_estimators
+          - train.max_depth
+          - train.min_samples_split
+          - train.min_samples_leaf
+          - train.max_features
+          - train.n_jobs
+          - evaluate.model_path
+    outs:
+      - models/model.joblib
+
+  # ─────────────────────────────────────────────────────────
+  # STAGE 4: Model Evaluation
+  # Loads the trained model, evaluates on held-out test set,
+  # and records accuracy, AUC, and F1-macro as JSON metrics.
+  # ─────────────────────────────────────────────────────────
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - src/evaluate.py
+      - src/utils/logger.py
+      - src/utils/config.py
+      - src/utils/metrics.py
+      - src/utils/paths.py
+      - models/model.joblib
+      - data/features.npz
+    params:
+      - params.yaml:
+          - evaluate.metrics_path
+          - evaluate.model_path
+          - evaluate.threshold
+    metrics:
+      - metrics/scores.json:
+          cache: false

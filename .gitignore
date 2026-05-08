@@ -1,0 +1,75 @@
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# ── Virtual Environments ───────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.local
+
+# ── DVC ────────────────────────────────────────────────────
+/data/adult.csv
+/data/processed.csv
+/data/features.npz
+/models/model.joblib
+/models/model_monolithic.joblib
+/metrics/scores.json
+/metrics/scores_monolithic.json
+# DVC cache (large binary objects)
+.dvc/cache/
+.dvc/tmp/
+
+# ── Logs ───────────────────────────────────────────────────
+logs/
+*.log
+repro_log.txt
+
+# ── Jupyter ────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ── Testing & Coverage ─────────────────────────────────────
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+# ── MyPy / Ruff / Black ────────────────────────────────────
+.mypy_cache/
+.ruff_cache/
+
+# ── Docker ─────────────────────────────────────────────────
+*.dockerignore
+
+# ── OS Artifacts ───────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# ── IDE ────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ── Secrets ────────────────────────────────────────────────
+*.pem
+*.key
+*.crt
+secrets/
