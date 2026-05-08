@@ -1,17 +1,3 @@
-# ============================================================
-# Enterprise MLOps Pipeline — Makefile
-# ============================================================
-# Provides ergonomic shortcuts for all common pipeline tasks.
-# Requires: make, python, pip, dvc, docker, docker-compose
-#
-# Usage:
-#   make setup       → Install dependencies
-#   make pipeline    → Run full DVC pipeline
-#   make test        → Run pytest suite
-#   make benchmark   → Run monolithic vs DVC benchmark
-#   make clean       → Remove generated artifacts
-# ============================================================
-
 .PHONY: all setup install data pipeline test benchmark clean docker-build docker-up lint format help
 
 PYTHON := python
@@ -19,10 +5,7 @@ PIP := pip
 DVC := dvc
 PYTEST := pytest
 
-# ── Default target ─────────────────────────────────────────
 all: help
-
-# ── Environment Setup ──────────────────────────────────────
 
 setup: install git-init dvc-init
 	@echo "✓ Environment ready"
@@ -41,8 +24,6 @@ dvc-init:
 	@$(DVC) init 2>/dev/null || true
 	@echo "✓ DVC initialized"
 
-# ── Data ───────────────────────────────────────────────────
-
 data:
 	@echo "→ Downloading UCI Adult Income dataset..."
 	$(PYTHON) -c "\
@@ -54,8 +35,6 @@ urllib.request.urlretrieve(url, 'data/adult.csv'); \
 print('Downloaded to data/adult.csv'); \
 "
 	@echo "✓ Dataset ready"
-
-# ── Pipeline Execution ─────────────────────────────────────
 
 pipeline: dvc-init
 	@echo "→ Running full DVC modular pipeline..."
@@ -77,14 +56,10 @@ train:
 evaluate:
 	$(PYTHON) src/evaluate.py
 
-# ── Monolithic Baseline ────────────────────────────────────
-
 monolithic:
 	@echo "→ Running monolithic ML pipeline (baseline)..."
 	$(PYTHON) train_monolithic.py
 	@echo "✓ Monolithic run complete"
-
-# ── Experiment Tracking ────────────────────────────────────
 
 exp-run:
 	@echo "→ Running DVC experiment..."
@@ -95,7 +70,6 @@ exp-show:
 
 exp-compare: exp-run exp-show
 
-# Example experiments with parameter sweeps
 exp-n100:
 	$(DVC) exp run --set-param train.n_estimators=100 --name exp-n100
 
@@ -108,15 +82,11 @@ exp-depth5:
 exp-depth15:
 	$(DVC) exp run --set-param train.max_depth=15 --name exp-depth15
 
-# ── Metrics ────────────────────────────────────────────────
-
 metrics:
 	$(DVC) metrics show
 
 metrics-diff:
 	$(DVC) metrics diff
-
-# ── Testing ────────────────────────────────────────────────
 
 test:
 	@echo "→ Running pytest test suite..."
@@ -129,8 +99,6 @@ test-cov:
 
 test-fast:
 	PYTHONPATH=. $(PYTEST) tests/ -x -q
-
-# ── Benchmarking ───────────────────────────────────────────
 
 benchmark:
 	@echo "→ Running full benchmark comparison..."
@@ -155,21 +123,15 @@ print(f'Cache speedup: {mono_time/cache_time:.1f}x'); \
 "
 	@echo "✓ Benchmark complete"
 
-# ── Caching Validation ─────────────────────────────────────
-
 test-cache:
 	@echo "→ Validating DVC caching behavior..."
 	bash test_caching.sh
 	@echo "✓ Caching test complete. See repro_log.txt"
 
-# ── Visualization ──────────────────────────────────────────
-
 dag:
 	@echo "→ Generating DVC DAG visualization..."
 	$(DVC) dag
 	@echo "(ASCII DAG shown above)"
-
-# ── Docker ─────────────────────────────────────────────────
 
 docker-build:
 	@echo "→ Building Docker image..."
@@ -189,8 +151,6 @@ docker-test:
 
 docker-pipeline:
 	docker-compose run app dvc repro
-
-# ── Cleanup ────────────────────────────────────────────────
 
 clean-outputs:
 	@echo "→ Removing generated ML artifacts..."
@@ -216,15 +176,11 @@ clean: clean-outputs clean-pycache
 clean-all: clean clean-cache
 	@echo "✓ Full clean complete"
 
-# ── Linting & Formatting ───────────────────────────────────
-
 lint:
 	ruff check src/ tests/ train_monolithic.py
 
 format:
 	black src/ tests/ train_monolithic.py
-
-# ── Help ───────────────────────────────────────────────────
 
 help:
 	@echo ""
