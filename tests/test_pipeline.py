@@ -30,7 +30,7 @@ def pipeline_dir(tmp_path):
             "target_column": "income",
             "test_size": 0.2,
         },
-        "model": {
+        "train": {
             "model_type": "random_forest",
             "n_estimators": 5,
             "max_depth": 3,

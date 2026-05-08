@@ -110,7 +110,7 @@ def load_model(path: Path) -> Any:
             f"Model artifact not found at '{path}'. "
             "Run the train stage first."
         )
-    model = joblib.load(path)
+    model = joblib.load(path, mmap_mode="r")
     logger.info("Model loaded from '%s'", path)
     return model
 

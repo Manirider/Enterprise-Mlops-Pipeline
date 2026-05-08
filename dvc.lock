@@ -87,8 +87,8 @@ stages:
       size: 2653
     - path: src/utils/helpers.py
       hash: md5
-      md5: 6cba9ea3e800c908a94c752740c689e9
-      size: 3659
+      md5: 20bee2e0d4a5706b824530a2c7e09fc9
+      size: 3811
     - path: src/utils/logger.py
       hash: md5
       md5: b67689dd11db4c0d6d8690d3d488ad83
@@ -106,13 +106,13 @@ stages:
         train.min_samples_leaf: 2
         train.min_samples_split: 5
         train.model_type: random_forest
-        train.n_estimators: 100
+        train.n_estimators: 150
         train.n_jobs: -1
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 3b4643892d903f2d2b2fdfab6d97967a
-      size: 4850745
+      md5: 0a658a4d297688e5542fd5bc867aa920
+      size: 7236025
   evaluate:
     cmd: python src/evaluate.py
     deps:
@@ -122,8 +122,8 @@ stages:
       size: 394657
     - path: models/model.joblib
       hash: md5
-      md5: 3b4643892d903f2d2b2fdfab6d97967a
-      size: 4850745
+      md5: 0a658a4d297688e5542fd5bc867aa920
+      size: 7236025
     - path: src/evaluate.py
       hash: md5
       md5: 6bcde553a655383b63449b862688a234
@@ -152,5 +152,5 @@ stages:
     outs:
     - path: metrics/scores.json
       hash: md5
-      md5: 3b0437eb864d2c6a39497d2bc95f26d3
-      size: 1079
+      md5: 11c57e7a5c9c2068f47b9983b4ccee33
+      size: 1083
