@@ -21,13 +21,13 @@ ENV/
 .env.local
 
 # ── DVC ────────────────────────────────────────────────────
-/data/adult.csv
-/data/processed.csv
-/data/features.npz
-/models/model.joblib
-/models/model_monolithic.joblib
-/metrics/scores.json
-/metrics/scores_monolithic.json
+# /data/adult.csv
+# /data/processed.csv
+# /data/features.npz
+# /models/model.joblib
+# /models/model_monolithic.joblib
+# /metrics/scores.json
+# /metrics/scores_monolithic.json
 # DVC cache (large binary objects)
 .dvc/cache/
 .dvc/tmp/

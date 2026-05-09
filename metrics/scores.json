@@ -1,0 +1,48 @@
+{
+  "accuracy": 0.865959,
+  "f1_macro": 0.811028,
+  "f1_binary": 0.709143,
+  "precision": 0.771339,
+  "recall": 0.656229,
+  "auc": 0.923931,
+  "confusion_matrix": [
+    [
+      4235,
+      292
+    ],
+    [
+      516,
+      985
+    ]
+  ],
+  "classification_report": {
+    "0": {
+      "precision": 0.8913912860450431,
+      "recall": 0.93549812237685,
+      "f1-score": 0.9129122655744772,
+      "support": 4527.0
+    },
+    "1": {
+      "precision": 0.7713390759592795,
+      "recall": 0.6562291805463024,
+      "f1-score": 0.709143268538517,
+      "support": 1501.0
+    },
+    "accuracy": 0.8659588586595885,
+    "macro avg": {
+      "precision": 0.8313651810021614,
+      "recall": 0.7958636514615762,
+      "f1-score": 0.8110277670564972,
+      "support": 6028.0
+    },
+    "weighted avg": {
+      "precision": 0.8614977280923671,
+      "recall": 0.8659588586595885,
+      "f1-score": 0.8621728388075601,
+      "support": 6028.0
+    }
+  },
+  "stage": "evaluate",
+  "n_test_samples": 6028,
+  "model_path": "models\\model.joblib"
+}
