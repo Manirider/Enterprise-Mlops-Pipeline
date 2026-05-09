@@ -1,4 +1,4 @@
-# 🚀 Enterprise MLOps Pipeline
+#  Enterprise MLOps Pipeline
 
 > **Production-grade, DVC-orchestrated machine learning system comparing monolithic vs modular ML workflows — built to FAANG engineering standards.**
 
@@ -9,9 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-pytest-green)](tests/)
 
----
-
-## 📋 Table of Contents
+##  Table of Contents
 
 1. [Project Overview](#-project-overview)
 2. [Why This Project Matters](#-why-this-project-matters)
@@ -29,9 +27,8 @@
 14. [Engineering Decisions](#-engineering-decisions)
 15. [Scalability & Future Roadmap](#-scalability--future-roadmap)
 
----
 
-## 🎯 Project Overview
+##  Project Overview
 
 This repository is a **complete, production-grade MLOps engineering system** that demonstrates how high-performing AI/ML teams structure, orchestrate, and maintain machine learning workflows at scale.
 
@@ -43,7 +40,6 @@ The project does **three things simultaneously**:
 
 3. **Demonstrates production MLOps tooling** — DVC's intelligent caching, experiment tracking, parameter management, artifact versioning, and full reproducibility in a containerized environment.
 
----
 
 ## 💡 Why This Project Matters
 
@@ -53,11 +49,11 @@ Every ML team starts with a script. It works once. Then someone changes a hyperp
 
 **This project captures exactly why that approach fails at scale:**
 
-- 🔁 **Re-running everything wastes engineering time** — A 45-second training cycle × 50 daily iterations = 37 minutes/day of wasted compute per engineer
-- 🧩 **No partial re-runs** — Changing a model hyperparameter shouldn't force data re-processing
-- 👥 **Collaboration is a nightmare** — Who's `model_final_v2_FINAL.pkl`?
-- 🔍 **Experiment results are lost** — "What was the AUC when we used depth=5?"
-- 🔐 **Reproducibility is fragile** — Same code, different machine, different result
+-  **Re-running everything wastes engineering time** — A 45-second training cycle × 50 daily iterations = 37 minutes/day of wasted compute per engineer
+- **No partial re-runs** — Changing a model hyperparameter shouldn't force data re-processing
+- **Collaboration is a nightmare** — Who's `model_final_v2_FINAL.pkl`?
+- **Experiment results are lost** — "What was the AUC when we used depth=5?"
+- **Reproducibility is fragile** — Same code, different machine, different result
 
 ### What DVC Solves
 
@@ -69,9 +65,8 @@ Every ML team starts with a script. It works once. Then someone changes a hyperp
 - **Data versioning** — `.dvc` files track datasets like Git tracks code
 - **Collaboration** — `dvc push/pull` syncs artifacts to/from cloud storage
 
----
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -119,14 +114,12 @@ data/adult.csv
       │ metrics/scores.json
 ```
 
----
-
-## 📁 Project Structure
+##  Project Structure
 
 ```
 enterprise-mlops-pipeline/
 │
-├── 📂 src/                      # Core pipeline source code
+├──  src/                      # Core pipeline source code
 │   ├── prepare.py               # Stage 1: Data cleaning & validation
 │   ├── featurize.py             # Stage 2: Feature engineering & splitting
 │   ├── train.py                 # Stage 3: Model training
@@ -185,8 +178,6 @@ enterprise-mlops-pipeline/
 └── .dockerignore                # Docker build context optimization
 ```
 
----
-
 ## 🤖 The ML Task
 
 ### Dataset: UCI Adult Income
@@ -224,16 +215,15 @@ The [UCI Adult Income dataset](https://archive.ics.uci.edu/ml/datasets/adult) co
 
 ```json
 {
-  "accuracy": 0.8672,
-  "auc": 0.9185,
-  "f1_macro": 0.8334,
-  "f1_binary": 0.7521,
-  "precision": 0.7983,
-  "recall": 0.7112
+  "accuracy": 0.8660,
+  "auc": 0.9239,
+  "f1_macro": 0.8110,
+  "f1_binary": 0.7091,
+  "precision": 0.7713,
+  "recall": 0.6562
 }
 ```
 
----
 
 ## 🧠 MLOps Concepts Demonstrated
 
@@ -251,7 +241,6 @@ The [UCI Adult Income dataset](https://archive.ics.uci.edu/ml/datasets/adult) co
 | **Dependency Injection** | params.yaml → all stages |
 | **Type Safety** | Python type hints throughout |
 
----
 
 ## ⚔️ Monolithic vs Modular
 
@@ -287,8 +276,6 @@ stages:
 - `evaluate`  → 🔄 EXECUTED (model artifact changed)
 
 **Result: 3.7× faster iteration, guaranteed reproducibility.**
-
----
 
 ## ⚡ Quick Start
 
@@ -349,7 +336,6 @@ python train_monolithic.py
 python train_monolithic.py --n-estimators 200 --max-depth 15
 ```
 
----
 
 ## 🔄 Running the Pipeline
 
@@ -392,8 +378,6 @@ make clean       # Remove generated artifacts
 make help        # Show all available commands
 ```
 
----
-
 ## 🐳 Docker Setup
 
 ### Build & Run
@@ -425,7 +409,6 @@ docker-compose --profile test up --build
 docker-compose down
 ```
 
----
 
 ## 🧪 Experiment Tracking
 
@@ -439,7 +422,7 @@ dvc exp run --name "exp-200-trees"
 
 # Parameter sweep
 dvc exp run --set-param train.n_estimators=200 --name "n200"
-dvc exp run --set-param train.max_depth=15 --name "depth15"
+dvc exp run --set-param train.   max_depth=15 --name "depth15"
 dvc exp run --set-param train.n_estimators=200 \
              --set-param train.max_depth=15 --name "n200-d15"
 
@@ -479,7 +462,7 @@ dvc exp show --csv > reports/experiment_results.csv
 └──────────────┴──────────────┴───────────┴──────────┴────────┴──────────┘
 ```
 
----
+
 
 ## 📊 Benchmark Results
 
@@ -493,7 +476,6 @@ dvc exp show --csv > reports/experiment_results.csv
 
 See **[benchmark.md](benchmark.md)** for the full analysis.
 
----
 
 ## 🧪 Testing
 
@@ -521,7 +503,6 @@ PYTHONPATH=. pytest tests/test_pipeline.py -v -s
 | `src/evaluate.py` | ✅ `test_evaluate.py` | ✅ `test_pipeline.py` |
 | `src/utils/metrics.py` | ✅ `test_evaluate.py` | — |
 
----
 
 ## 🔧 Engineering Decisions
 
@@ -541,7 +522,6 @@ After encoding, `X_train` is a float64 NumPy array. Serializing it as CSV requir
 
 DVC monitors parameter files at the **content hash** level. If `params.yaml` changes, DVC knows exactly which stages depend on which parameters and executes only the affected downstream stages. Argparse-based CLIs don't give DVC this granularity.
 
----
 
 ## 🚀 Scalability & Future Roadmap
 
@@ -584,13 +564,13 @@ with mlflow.start_run():
     mlflow.sklearn.log_model(model, "random_forest")
 ```
 
----
+
 
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
 
----
+
 
 ## 🙏 Acknowledgments
 
@@ -598,7 +578,6 @@ This project is licensed under the [MIT License](LICENSE).
 - **DVC team** (Iterative.ai) — For building the MLOps tooling that makes this possible
 - **scikit-learn community** — For the production-grade ML library
 
----
 
 <div align="center">
 

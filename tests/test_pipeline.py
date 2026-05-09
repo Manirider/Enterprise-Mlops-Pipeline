@@ -7,7 +7,7 @@ import pytest
 @pytest.fixture
 def pipeline_dir(tmp_path):
     import yaml, os, shutil
-    params = {'base': {'random_state': 42, 'log_level': 'INFO', 'project_name': 'test'}, 'data': {'raw_data_path': str(tmp_path / 'data' / 'adult.csv'), 'processed_data_path': str(tmp_path / 'data' / 'processed.csv'), 'features_path': str(tmp_path / 'data' / 'features.npz'), 'target_column': 'income', 'test_size': 0.2}, 'train': {'model_type': 'random_forest', 'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1}, 'evaluate': {'metrics_path': str(tmp_path / 'metrics' / 'scores.json'), 'model_path': str(tmp_path / 'models' / 'model.joblib'), 'threshold': 0.5}}
+    params = {'base': {'random_state': 42, 'log_level': 'INFO', 'project_name': 'test'}, 'data': {'raw_data_path': str(tmp_path / 'data' / 'adult.csv'), 'processed_data_path': str(tmp_path / 'data' / 'processed.csv'), 'features_path': str(tmp_path / 'data' / 'features.npz'), 'target_column': 'income', 'test_size': 0.2}, 'featurize': {'add_interaction_features': True}, 'train': {'model_type': 'random_forest', 'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'learning_rate': 0.1, 'subsample': 1.0, 'colsample_bytree': 1.0, 'min_child_samples': 20, 'reg_alpha': 0.0, 'reg_lambda': 0.0}, 'evaluate': {'metrics_path': str(tmp_path / 'metrics' / 'scores.json'), 'model_path': str(tmp_path / 'models' / 'model.joblib'), 'threshold': 0.5}}
     (tmp_path / 'params.yaml').write_text(yaml.dump(params))
     for d in ['data', 'models', 'metrics', 'logs']:
         (tmp_path / d).mkdir(parents=True, exist_ok=True)

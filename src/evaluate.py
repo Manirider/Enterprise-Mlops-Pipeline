@@ -27,10 +27,15 @@ def run_evaluate() -> None:
     Paths.ensure_dirs()
     model = load_model(model_path)
     X_test, y_test = load_test_data(features_path)
-    y_pred = model.predict(X_test)
+    # Load feature names and wrap in DataFrame to match training contract
+    import pandas as pd
+    raw = np.load(features_path, allow_pickle=True)
+    feature_names = list(raw['feature_names'])
+    X_test_df = pd.DataFrame(X_test, columns=feature_names)
+    y_pred = model.predict(X_test_df)
     y_prob: np.ndarray | None = None
     if hasattr(model, 'predict_proba'):
-        y_prob = model.predict_proba(X_test)[:, 1]
+        y_prob = model.predict_proba(X_test_df)[:, 1]
     metrics = compute_metrics(y_true=y_test, y_pred=y_pred, y_prob=y_prob)
     metrics['stage'] = 'evaluate'
     metrics['n_test_samples'] = int(len(y_test))

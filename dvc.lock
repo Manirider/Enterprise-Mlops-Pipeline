@@ -9,20 +9,20 @@ stages:
       size: 3974305
     - path: src/prepare.py
       hash: md5
-      md5: 85122d4d8e3f584c3931c6fff547be8f
-      size: 7433
+      md5: 75bf5d59819a689075e0e1ed255eae9c
+      size: 4237
     - path: src/utils/config.py
       hash: md5
-      md5: 6fe7ee1fcceace6649c6537223458774
-      size: 2653
+      md5: 2d427e9687cd14e7b88dda5fbe8dc5ef
+      size: 1198
     - path: src/utils/logger.py
       hash: md5
-      md5: b67689dd11db4c0d6d8690d3d488ad83
-      size: 2802
+      md5: 564f683068abb09980d5f402c1ef60ca
+      size: 1321
     - path: src/utils/paths.py
       hash: md5
-      md5: 84bff3047ffe4b9ad8083835d12eca13
-      size: 2065
+      md5: 249db373051eed1a3ec10eceb87e3f17
+      size: 753
     params:
       params.yaml:
         base.log_level: INFO
@@ -44,20 +44,20 @@ stages:
       size: 3325654
     - path: src/featurize.py
       hash: md5
-      md5: f56bcb3cb3603f72fcd64f49120330ba
-      size: 7520
+      md5: 1f52affd1077949e21c0e2c78eab77b7
+      size: 5120
     - path: src/utils/config.py
       hash: md5
-      md5: 6fe7ee1fcceace6649c6537223458774
-      size: 2653
+      md5: 2d427e9687cd14e7b88dda5fbe8dc5ef
+      size: 1198
     - path: src/utils/logger.py
       hash: md5
-      md5: b67689dd11db4c0d6d8690d3d488ad83
-      size: 2802
+      md5: 564f683068abb09980d5f402c1ef60ca
+      size: 1321
     - path: src/utils/paths.py
       hash: md5
-      md5: 84bff3047ffe4b9ad8083835d12eca13
-      size: 2065
+      md5: 249db373051eed1a3ec10eceb87e3f17
+      size: 753
     params:
       params.yaml:
         base.random_state: 42
@@ -65,85 +65,92 @@ stages:
         data.processed_data_path: data/processed.csv
         data.target_column: income
         data.test_size: 0.2
+        featurize.add_interaction_features: true
     outs:
     - path: data/features.npz
       hash: md5
-      md5: 788cc575d64213ea9c18739003bafebf
-      size: 394657
+      md5: 8ff10b75d31e8a7fa0ec1810cf3394fb
+      size: 451151
   train:
     cmd: python src/train.py
     deps:
     - path: data/features.npz
       hash: md5
-      md5: 788cc575d64213ea9c18739003bafebf
-      size: 394657
+      md5: 8ff10b75d31e8a7fa0ec1810cf3394fb
+      size: 451151
     - path: src/train.py
       hash: md5
-      md5: cce94a7236eefa57b8eea47b4a77c4cd
-      size: 5804
+      md5: 9948fe670456d187f8e1a86aee1c7f78
+      size: 5548
     - path: src/utils/config.py
       hash: md5
-      md5: 6fe7ee1fcceace6649c6537223458774
-      size: 2653
+      md5: 2d427e9687cd14e7b88dda5fbe8dc5ef
+      size: 1198
     - path: src/utils/helpers.py
       hash: md5
-      md5: 20bee2e0d4a5706b824530a2c7e09fc9
-      size: 3811
+      md5: 2b0c6f0d6116f6f6a9caeb3b20028359
+      size: 1532
     - path: src/utils/logger.py
       hash: md5
-      md5: b67689dd11db4c0d6d8690d3d488ad83
-      size: 2802
+      md5: 564f683068abb09980d5f402c1ef60ca
+      size: 1321
     - path: src/utils/paths.py
       hash: md5
-      md5: 84bff3047ffe4b9ad8083835d12eca13
-      size: 2065
+      md5: 249db373051eed1a3ec10eceb87e3f17
+      size: 753
     params:
       params.yaml:
         base.random_state: 42
         evaluate.model_path: models/model.joblib
-        train.max_depth: 10
+        train.colsample_bytree: 0.8
+        train.learning_rate: 0.03
+        train.max_depth: 6
         train.max_features: sqrt
+        train.min_child_samples: 20
         train.min_samples_leaf: 2
         train.min_samples_split: 5
-        train.model_type: random_forest
-        train.n_estimators: 150
+        train.model_type: lightgbm
+        train.n_estimators: 800
         train.n_jobs: -1
+        train.reg_alpha: 0.1
+        train.reg_lambda: 1.0
+        train.subsample: 0.8
     outs:
     - path: models/model.joblib
       hash: md5
-      md5: 0a658a4d297688e5542fd5bc867aa920
-      size: 7236025
+      md5: a253acfad8f80214edcb1803f923376b
+      size: 2309308
   evaluate:
     cmd: python src/evaluate.py
     deps:
     - path: data/features.npz
       hash: md5
-      md5: 788cc575d64213ea9c18739003bafebf
-      size: 394657
+      md5: 8ff10b75d31e8a7fa0ec1810cf3394fb
+      size: 451151
     - path: models/model.joblib
       hash: md5
-      md5: 0a658a4d297688e5542fd5bc867aa920
-      size: 7236025
+      md5: a253acfad8f80214edcb1803f923376b
+      size: 2309308
     - path: src/evaluate.py
       hash: md5
-      md5: 6bcde553a655383b63449b862688a234
-      size: 4427
+      md5: 777115c8cc09c72980870029bbaf7edb
+      size: 2626
     - path: src/utils/config.py
       hash: md5
-      md5: 6fe7ee1fcceace6649c6537223458774
-      size: 2653
+      md5: 2d427e9687cd14e7b88dda5fbe8dc5ef
+      size: 1198
     - path: src/utils/logger.py
       hash: md5
-      md5: b67689dd11db4c0d6d8690d3d488ad83
-      size: 2802
+      md5: 564f683068abb09980d5f402c1ef60ca
+      size: 1321
     - path: src/utils/metrics.py
       hash: md5
-      md5: b57b729d544e714e337313793af25902
-      size: 3502
+      md5: d6591f2f8cad086c8c3c6ef3936ef3f7
+      size: 2004
     - path: src/utils/paths.py
       hash: md5
-      md5: 84bff3047ffe4b9ad8083835d12eca13
-      size: 2065
+      md5: 249db373051eed1a3ec10eceb87e3f17
+      size: 753
     params:
       params.yaml:
         evaluate.metrics_path: metrics/scores.json
@@ -152,5 +159,5 @@ stages:
     outs:
     - path: metrics/scores.json
       hash: md5
-      md5: 11c57e7a5c9c2068f47b9983b4ccee33
-      size: 1083
+      md5: 439b82b183266aab919d21e111b6170e
+      size: 1079

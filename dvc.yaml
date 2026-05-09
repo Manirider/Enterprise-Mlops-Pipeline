@@ -33,6 +33,7 @@ stages:
           - data.features_path
           - data.target_column
           - data.test_size
+          - featurize.add_interaction_features
     outs:
       - data/features.npz
 
@@ -51,6 +52,12 @@ stages:
           - train.model_type
           - train.n_estimators
           - train.max_depth
+          - train.learning_rate
+          - train.subsample
+          - train.colsample_bytree
+          - train.min_child_samples
+          - train.reg_alpha
+          - train.reg_lambda
           - train.min_samples_split
           - train.min_samples_leaf
           - train.max_features

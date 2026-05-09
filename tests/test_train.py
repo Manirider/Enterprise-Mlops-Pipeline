@@ -24,12 +24,12 @@ class TestBuildModel:
     def test_returns_random_forest(self):
         from src.train import build_model
         params = {'n_estimators': 10, 'max_depth': 5, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'random_state': 42}
-        assert isinstance(build_model(params), RandomForestClassifier)
+        assert isinstance(build_model('random_forest', params), RandomForestClassifier)
 
     def test_params_applied(self):
         from src.train import build_model
         params = {'n_estimators': 25, 'max_depth': 7, 'min_samples_split': 4, 'min_samples_leaf': 2, 'max_features': 'sqrt', 'n_jobs': -1, 'random_state': 99}
-        model = build_model(params)
+        model = build_model('random_forest', params)
         assert model.n_estimators == 25
         assert model.max_depth == 7
         assert model.random_state == 99
@@ -38,7 +38,7 @@ class TestBuildModel:
         from sklearn.exceptions import NotFittedError
         from src.train import build_model
         params = {'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'random_state': 0}
-        model = build_model(params)
+        model = build_model('random_forest', params)
         with pytest.raises(NotFittedError):
             model.predict(np.random.rand(10, 5))
 
@@ -66,7 +66,7 @@ class TestModelTraining:
         from src.train import build_model
         X_train, X_test, y_train, _ = small_features
         params = {'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'random_state': 42}
-        model = build_model(params)
+        model = build_model('random_forest', params)
         model.fit(X_train, y_train)
         assert len(model.predict(X_test)) == len(X_test)
 
@@ -74,7 +74,7 @@ class TestModelTraining:
         from src.train import build_model
         X_train, X_test, y_train, _ = small_features
         params = {'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'random_state': 42}
-        model = build_model(params)
+        model = build_model('random_forest', params)
         model.fit(X_train, y_train)
         assert set(np.unique(model.predict(X_test))).issubset({0, 1})
 
@@ -82,7 +82,7 @@ class TestModelTraining:
         from src.train import build_model
         X_train, X_test, y_train, _ = small_features
         params = {'n_estimators': 5, 'max_depth': 3, 'min_samples_split': 2, 'min_samples_leaf': 1, 'max_features': 'sqrt', 'n_jobs': 1, 'random_state': 42}
-        model = build_model(params)
+        model = build_model('random_forest', params)
         model.fit(X_train, y_train)
         path = tmp_path / 'model.joblib'
         joblib.dump(model, path)

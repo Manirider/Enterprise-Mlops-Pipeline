@@ -1,0 +1,9 @@
+{
+  "accuracy": 0.807399,
+  "auc": 0.911649,
+  "f1_macro": 0.774682,
+  "f1_binary": 0.688823,
+  "n_test_samples": 6028,
+  "model_type": "monolithic_random_forest",
+  "total_wall_clock_seconds": 0.714
+}

@@ -19,6 +19,20 @@ def load_processed(path: Path) -> pd.DataFrame:
     logger.info('Loaded processed data: %d rows × %d columns', *df.shape)
     return df
 
+def add_interaction_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add engineered interaction features that boost model performance."""
+    df = df.copy()
+    # Net capital: gain minus loss (strongest single income signal after education)
+    df['capital_net'] = df['capital_gain'] - df['capital_loss']
+    # Binary flag: any significant capital activity (non-zero gain or loss)
+    df['has_capital'] = ((df['capital_gain'] > 0) | (df['capital_loss'] > 0)).astype(int)
+    # Age buckets: young(0) <=30, prime(1) 31-50, senior(2) >50
+    df['age_bin'] = pd.cut(df['age'], bins=[0, 30, 50, 100], labels=[0, 1, 2]).astype(int)
+    # Hours bins: part-time(0) <35, full-time(1) 35-45, overtime(2) >45
+    df['hours_bin'] = pd.cut(df['hours_per_week'], bins=[0, 35, 45, 100], labels=[0, 1, 2]).astype(int)
+    logger.info('Interaction features added: capital_net, has_capital, age_bin, hours_bin (+4 features)')
+    return df
+
 def encode_features(df: pd.DataFrame, target_col: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
     logger.info("Encoding features — target column: '%s'", target_col)
     X_df = df.drop(columns=[target_col])
@@ -58,10 +72,14 @@ def run_featurize() -> None:
     features_path = Path(get_param('data.features_path'))
     target_col = get_param('data.target_column')
     test_size = get_param('data.test_size')
+    use_interactions = get_param('featurize.add_interaction_features')
     set_seed(random_state)
     Paths.ensure_dirs()
     df = load_processed(processed_path)
     log_dataset_info(df, label='processed')
+    if use_interactions:
+        df = add_interaction_features(df)
+        logger.info('Feature engineering enabled — total columns: %d', df.shape[1])
     X, y, feature_names = encode_features(df, target_col)
     X_train, X_test, y_train, y_test = split_data(X, y, test_size=test_size, random_state=random_state)
     features_path.parent.mkdir(parents=True, exist_ok=True)
