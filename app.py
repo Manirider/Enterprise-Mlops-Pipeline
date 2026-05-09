@@ -161,8 +161,8 @@ if model is None:
     st.stop()
 
 # --- Helper functions for feature engineering ---
-def engineer_features(input_dict):
-    df = pd.DataFrame([input_dict])
+def engineer_features(df_input):
+    df = df_input.copy()
     
     # Engineer interactions exactly as in src/featurize.py
     df['capital_net'] = df['capital_gain'] - df['capital_loss']
@@ -214,85 +214,153 @@ with st.sidebar:
 
 # Main Area
 st.title("Enterprise AI Income Predictor")
-st.markdown("Real-time inference engine powered by our modular MLOps architecture. Adjust the demographic and financial parameters below to predict income bracket.")
+st.markdown("Real-time inference engine powered by our modular MLOps architecture.")
 
-with st.form("prediction_form"):
-    st.markdown("### Profile Details")
-    
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        age = st.number_input("Age", min_value=17, max_value=100, value=30, step=1)
-        education = st.selectbox("Education", unique_vals.get('education', []))
-        education_num = st.number_input("Education Years", min_value=1, max_value=16, value=10, step=1)
-        marital_status = st.selectbox("Marital Status", unique_vals.get('marital_status', []))
-        
-    with col2:
-        workclass = st.selectbox("Workclass", unique_vals.get('workclass', []))
-        occupation = st.selectbox("Occupation", unique_vals.get('occupation', []))
-        relationship = st.selectbox("Relationship", unique_vals.get('relationship', []))
-        hours_per_week = st.number_input("Hours per week", min_value=1, max_value=99, value=40, step=1)
-        
-    with col3:
-        capital_gain = st.number_input("Capital Gain ($)", min_value=0, value=0, step=100)
-        capital_loss = st.number_input("Capital Loss ($)", min_value=0, value=0, step=100)
-        race = st.selectbox("Race", unique_vals.get('race', []))
-        sex = st.selectbox("Sex", unique_vals.get('sex', []))
-        
-    native_country = st.selectbox("Native Country", unique_vals.get('native_country', []))
-    
-    # We also need fnlwgt, though it's typically just a demographic weight. Use median/mean.
-    # In real world, we might not ask user for fnlwgt. We'll pass a default.
-    fnlwgt = 189778.0 # typical median value from adult dataset
-    
-    submit = st.form_submit_button("Generate Prediction")
+tab1, tab2, tab3 = st.tabs(["Single Prediction", "Batch Prediction", "Data Insights"])
 
-if submit:
-    # Prepare input dict
-    input_data = {
-        'age': age,
-        'fnlwgt': fnlwgt,
-        'education_num': education_num,
-        'capital_gain': capital_gain,
-        'capital_loss': capital_loss,
-        'hours_per_week': hours_per_week,
-        'workclass': workclass,
-        'education': education,
-        'marital_status': marital_status,
-        'occupation': occupation,
-        'relationship': relationship,
-        'race': race,
-        'sex': sex,
-        'native_country': native_country
-    }
+with tab1:
+    with st.form("prediction_form"):
+        st.markdown("### Profile Details")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            age = st.number_input("Age", min_value=17, max_value=100, value=30, step=1)
+            education = st.selectbox("Education", unique_vals.get('education', []))
+            education_num = st.number_input("Education Years", min_value=1, max_value=16, value=10, step=1)
+            marital_status = st.selectbox("Marital Status", unique_vals.get('marital_status', []))
+            
+        with col2:
+            workclass = st.selectbox("Workclass", unique_vals.get('workclass', []))
+            occupation = st.selectbox("Occupation", unique_vals.get('occupation', []))
+            relationship = st.selectbox("Relationship", unique_vals.get('relationship', []))
+            hours_per_week = st.number_input("Hours per week", min_value=1, max_value=99, value=40, step=1)
+            
+        with col3:
+            capital_gain = st.number_input("Capital Gain ($)", min_value=0, value=0, step=100)
+            capital_loss = st.number_input("Capital Loss ($)", min_value=0, value=0, step=100)
+            race = st.selectbox("Race", unique_vals.get('race', []))
+            sex = st.selectbox("Sex", unique_vals.get('sex', []))
+            
+        native_country = st.selectbox("Native Country", unique_vals.get('native_country', []))
+        
+        # We also need fnlwgt, though it's typically just a demographic weight. Use median/mean.
+        fnlwgt = 189778.0 
+        
+        submit = st.form_submit_button("Generate Prediction")
+
+    if submit:
+        # Prepare input df
+        input_data = pd.DataFrame([{
+            'age': age,
+            'fnlwgt': fnlwgt,
+            'education_num': education_num,
+            'capital_gain': capital_gain,
+            'capital_loss': capital_loss,
+            'hours_per_week': hours_per_week,
+            'workclass': workclass,
+            'education': education,
+            'marital_status': marital_status,
+            'occupation': occupation,
+            'relationship': relationship,
+            'race': race,
+            'sex': sex,
+            'native_country': native_country
+        }])
+        
+        try:
+            # Engineer features
+            X_inference = engineer_features(input_data)
+            
+            # Predict
+            prediction_prob = model.predict_proba(X_inference)[0][1]
+            prediction_class = model.predict(X_inference)[0]
+            
+            # Render Result
+            st.markdown("---")
+            st.markdown("### Prediction Results")
+            
+            if prediction_class == 1:
+                st.markdown(f'''
+                <div class="prediction-result prediction-positive">
+                    <h2 style="color: #166534; margin: 0;">> $50,000 / year</h2>
+                    <p style="margin-top: 10px; font-size: 1.1rem;">Confidence: <strong>{prediction_prob:.1%}</strong></p>
+                </div>
+                ''', unsafe_allow_html=True)
+                st.balloons()
+            else:
+                st.markdown(f'''
+                <div class="prediction-result prediction-negative">
+                    <h2 style="color: #991b1b; margin: 0;"><= $50,000 / year</h2>
+                    <p style="margin-top: 10px; font-size: 1.1rem;">Probability of high income: <strong>{prediction_prob:.1%}</strong></p>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+        except Exception as e:
+            st.error(f"Error during prediction: {str(e)}")
+
+with tab2:
+    st.markdown("### Batch Inference Upload")
+    st.markdown("Upload a CSV containing demographic data to get batch predictions.")
+    
+    uploaded_file = st.file_uploader("Upload CSV File", type=["csv"])
+    if uploaded_file is not None:
+        try:
+            batch_df = pd.read_csv(uploaded_file)
+            st.success(f"Successfully loaded {len(batch_df)} rows.")
+            
+            if st.button("Run Batch Prediction"):
+                with st.spinner('Running inference...'):
+                    # Ensure fnlwgt is present if missing
+                    if 'fnlwgt' not in batch_df.columns:
+                        batch_df['fnlwgt'] = 189778.0
+                    
+                    X_batch = engineer_features(batch_df)
+                    preds = model.predict(X_batch)
+                    probs = model.predict_proba(X_batch)[:, 1]
+                    
+                    results_df = batch_df.copy()
+                    results_df['prediction'] = np.where(preds == 1, '>50K', '<=50K')
+                    results_df['confidence'] = probs
+                    
+                    st.markdown("### Batch Results preview")
+                    st.dataframe(results_df.head(10))
+                    
+                    csv = results_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="Download Full Results",
+                        data=csv,
+                        file_name='batch_predictions.csv',
+                        mime='text/csv',
+                    )
+        except Exception as e:
+            st.error(f"Error processing file: {str(e)}")
+
+with tab3:
+    st.markdown("### Model Insights & Feature Importance")
+    st.markdown("Understand which features the LightGBM model values most when predicting income brackets.")
     
     try:
-        # Engineer features
-        X_inference = engineer_features(input_data)
+        # Extract feature importances
+        importances = model.feature_importances_
+        # Dummy call to engineer_features to get exact feature names used by model
+        dummy_df = pd.DataFrame([unique_vals]).map(lambda x: x[0] if isinstance(x, list) else 0)
+        # add num cols with dummy values
+        for c in num_cols: dummy_df[c] = 0
+        feature_names = engineer_features(dummy_df).columns
         
-        # Predict
-        prediction_prob = model.predict_proba(X_inference)[0][1]
-        prediction_class = model.predict(X_inference)[0]
+        feat_imp_df = pd.DataFrame({
+            'Feature': feature_names,
+            'Importance': importances
+        }).sort_values('Importance', ascending=False)
         
-        # Render Result
-        st.markdown("---")
-        st.markdown("### Prediction Results")
+        st.bar_chart(feat_imp_df.set_index('Feature'))
         
-        if prediction_class == 1:
-            st.markdown(f'''
-            <div class="prediction-result prediction-positive">
-                <h2 style="color: #166534; margin: 0;">> $50,000 / year</h2>
-                <p style="margin-top: 10px; font-size: 1.1rem;">Confidence: <strong>{prediction_prob:.1%}</strong></p>
-            </div>
-            ''', unsafe_allow_html=True)
-            st.balloons()
-        else:
-            st.markdown(f'''
-            <div class="prediction-result prediction-negative">
-                <h2 style="color: #991b1b; margin: 0;"><= $50,000 / year</h2>
-                <p style="margin-top: 10px; font-size: 1.1rem;">Probability of high income: <strong>{prediction_prob:.1%}</strong></p>
-            </div>
-            ''', unsafe_allow_html=True)
-            
+        st.markdown("""
+        **Top Drivers of Income:**
+        - Engineered interaction features (like `capital_net` and `age_bin`) often appear high, validating the feature engineering pipeline.
+        - Financial factors (`capital_gain`, `capital_loss`) and Demographic indicators (`age`, `education_num`) generally hold the highest predictive weight.
+        """)
+        
     except Exception as e:
-        st.error(f"Error during prediction: {str(e)}")
+        st.error(f"Error generating insights: {str(e)}")
