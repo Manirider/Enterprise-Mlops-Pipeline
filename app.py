@@ -198,11 +198,11 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("#### Model Performance")
     if metrics:
-        st.markdown(f"**Accuracy:** `{metrics.get('test_accuracy', 0):.4f}`")
-        st.markdown(f"**ROC AUC:** `{metrics.get('test_roc_auc', 0):.4f}`")
-        st.markdown(f"**Precision:** `{metrics.get('test_precision', 0):.4f}`")
-        st.markdown(f"**Recall:** `{metrics.get('test_recall', 0):.4f}`")
-        st.markdown(f"**F1 Score:** `{metrics.get('test_f1', 0):.4f}`")
+        st.markdown(f"**Accuracy:** `{metrics.get('accuracy', 0):.4f}`")
+        st.markdown(f"**ROC AUC:** `{metrics.get('auc', 0):.4f}`")
+        st.markdown(f"**Precision:** `{metrics.get('precision', 0):.4f}`")
+        st.markdown(f"**Recall:** `{metrics.get('recall', 0):.4f}`")
+        st.markdown(f"**F1 Score:** `{metrics.get('f1_macro', 0):.4f}`")
     else:
         st.warning("Metrics not available.")
         
